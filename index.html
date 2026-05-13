@@ -1,0 +1,1512 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garage Give Away – Free Items!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #2a7a2a;
+      --green-dark: #1e5e1e;
+      --green-light: #eaf5ea;
+      --red: #c0392b;
+      --red-light: #fdecea;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --bg: #eef2ee;
+      --card-alt: #f3f8f3;
+      --text: #1a1a1a;
+      --muted: #5a6a5a;
+      --border: #dde5dd;
+      --radius: 14px;
+      --shadow: 0 2px 14px rgba(0,0,0,0.09);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo',
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+      color: white;
+      padding: 2.5rem 1.5rem 2.2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+
+    /* Announcement — Korean & English both supported */
+    .announcement-area { margin-top: 0.9rem; }
+    .announcement-display {
+      display: inline-block;
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      padding: 0.55rem 1.4rem;
+      font-size: 1.08rem;
+      font-weight: 600;
+      max-width: 680px;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+    .announcement-display:empty { display: none; }
+    .announcement-edit {
+      display: none;
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      width: min(680px, 90%);
+      padding: 0.55rem 1.1rem;
+      background: rgba(255,255,255,0.15);
+      border: 1.5px dashed rgba(255,255,255,0.65);
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: center;
+      word-break: keep-all;
+    }
+    .announcement-edit::placeholder { color: rgba(255,255,255,0.55); }
+    .announcement-edit.visible { display: inline-block; }
+
+    .header-meta {
+      margin-top: 0.85rem;
+      font-size: 0.93rem;
+      opacity: 0.88;
+    }
+
+    /* ── Edit banner ── */
+    #edit-banner {
+      display: none;
+      background: var(--amber);
+      color: white;
+      text-align: center;
+      padding: 0.6rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      align-items: center;
+      justify-content: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+    #edit-banner.visible { display: flex; }
+    .banner-btn {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 0.22rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .banner-btn:hover { background: rgba(0,0,0,0.32); }
+
+    /* ── Grid — checkerboard layout ── */
+    .grid {
+      max-width: 1300px;
+      margin: 1.8rem auto 0;
+      padding: 0 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 980px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .grid { grid-template-columns: 1fr; } header h1 { font-size: 1.85rem; } }
+
+    /* Alternating card backgrounds for checkerboard feel */
+    .grid > .card:nth-child(odd)  { background: #ffffff; }
+    .grid > .card:nth-child(even) { background: var(--card-alt); }
+
+    /* ── Card ── */
+    .card {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s, box-shadow 0.18s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .card > .img-wrap { border-radius: var(--radius) var(--radius) 0 0; }
+    .card:not(.edit-card):hover { transform: translateY(-3px); box-shadow: 0 8px 26px rgba(0,0,0,0.14); }
+    .card.gone { opacity: 0.68; }
+    .card.edit-card { border-color: var(--amber); }
+
+    /* Item number badge */
+    .item-badge {
+      position: absolute;
+      top: 0.55rem;
+      left: 0.55rem;
+      background: rgba(0,0,0,0.64);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.22rem 0.6rem;
+      border-radius: 5px;
+      z-index: 4;
+      letter-spacing: 0.3px;
+      line-height: 1.5;
+      pointer-events: none;
+    }
+
+    /* Image area */
+    .img-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: #d8dfd8;
+      cursor: zoom-in;
+    }
+    .img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s;
+    }
+    .img-wrap.img-error img { opacity: 0; }
+    .img-wrap.img-error::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #d8dfd8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%23aab8aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E") center / 48px no-repeat;
+    }
+    .card:not(.gone):not(.edit-card) .img-wrap:hover img { transform: scale(1.05); }
+    .edit-card .img-wrap { cursor: default; }
+
+    /* Dots */
+    .dots {
+      position: absolute;
+      bottom: 0.65rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 2;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.4);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s;
+    }
+    .dot.active { background: white; border-color: white; }
+
+    /* Gone overlay — red prohibition circle */
+    .gone-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .gone-circle {
+      width: 52%;
+      max-width: 115px;
+      filter: drop-shadow(0 3px 10px rgba(0,0,0,0.5));
+    }
+
+    /* ── Edit mode thumbnail strip ── */
+    .thumb-strip {
+      padding: 0.65rem 0.85rem;
+      background: #f7f9f7;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .thumb-item { position: relative; flex-shrink: 0; }
+    .thumb-item img {
+      width: 58px; height: 58px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      display: block;
+    }
+    .thumb-item.active img { border-color: var(--amber); }
+    .thumb-del {
+      position: absolute;
+      top: -7px; right: -7px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--red);
+      color: white;
+      border: 2px solid white;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-weight: 900;
+      z-index: 1;
+    }
+    .thumb-del:hover { background: #a93226; }
+    .add-photo-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 58px; height: 58px;
+      border: 2px dashed #bbb;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+      gap: 2px;
+      flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .add-photo-label:hover { border-color: var(--amber); color: var(--amber); }
+    .add-photo-label .plus { font-size: 1.25rem; line-height: 1; }
+
+    /* ── Card body ── */
+    .card-body { padding: 0.95rem 1rem 0.55rem; flex: 1; }
+    .item-num-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 0.15rem;
+    }
+    .card-title { font-size: 1rem; font-weight: 700; line-height: 1.35; margin-bottom: 0.35rem; }
+    .card-desc  { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+
+    .edit-title, .edit-desc {
+      width: 100%;
+      font-family: inherit;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 0.42rem 0.65rem;
+      color: var(--text);
+      background: white;
+      transition: border-color 0.15s;
+    }
+    .edit-title:focus, .edit-desc:focus { outline: none; border-color: var(--amber); }
+    .edit-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .edit-desc  { font-size: 0.83rem; line-height: 1.6; resize: vertical; min-height: 80px; }
+
+    /* ── Card footer ── */
+    .card-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .status {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.27rem 0.85rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .status.available   { background: var(--green-light); color: var(--green); }
+    .status.gone-status { background: var(--red-light);   color: var(--red);   }
+    .photo-count { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+
+    /* ── Public thumbnail strip ── */
+    .pub-thumb-strip {
+      padding: 0.5rem 0.75rem 0.6rem;
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      background: #f7f9f7;
+      border-top: 1px solid var(--border);
+    }
+    .pub-thumb {
+      width: 62px; height: 62px;
+      object-fit: cover;
+      border-radius: 5px;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      display: block;
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    .pub-thumb:hover { border-color: var(--green); opacity: 0.85; }
+
+    .toggle-btn {
+      font-size: 0.78rem; font-weight: 700;
+      padding: 0.3rem 0.85rem;
+      border-radius: 7px; border: none;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .btn-gone      { background: var(--red-light);   color: var(--red);   }
+    .btn-gone:hover      { background: #f5c6c2; }
+    .btn-available { background: var(--green-light); color: var(--green); }
+    .btn-available:hover { background: #c5e5c5; }
+
+    .delete-item-btn {
+      font-size: 0.78rem; font-weight: 700;
+      padding: 0.3rem 0.85rem;
+      border-radius: 7px;
+      border: 1.5px solid var(--red);
+      background: white; color: var(--red);
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .delete-item-btn:hover { background: var(--red-light); }
+
+    /* Add new item card (edit mode) */
+    .add-item-card {
+      border-radius: var(--radius);
+      border: 2.5px dashed #bbb;
+      background: rgba(255,255,255,0.55);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      cursor: pointer;
+      color: var(--muted);
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .add-item-card:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+    .add-item-card .big-plus { font-size: 2.8rem; line-height: 1; }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+    }
+
+    /* ── Drag-and-drop (admin edit mode) ── */
+    .edit-card { cursor: grab; }
+    .edit-card:active { cursor: grabbing; }
+    .card.dragging { opacity: 0.3; transform: scale(0.97); transition: none; }
+    .card.drag-over {
+      outline: 3px solid var(--green);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 5px rgba(42,122,42,0.18);
+    }
+    .drag-handle {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.6rem;
+      color: rgba(255,255,255,0.9);
+      font-size: 1.15rem;
+      cursor: grab;
+      z-index: 5;
+      line-height: 1;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.55);
+      user-select: none;
+      letter-spacing: -1px;
+    }
+
+    /* ── Bulletin Board ── */
+    #board-section {
+      max-width: 820px;
+      margin: 3.5rem auto 0;
+      padding: 0 1.25rem;
+    }
+    .board-heading { text-align: center; margin-bottom: 1.5rem; }
+    .board-heading h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--green-dark);
+    }
+    /* Korean instruction banner */
+    .board-korean-notice {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      background: var(--green-light);
+      border: 1.5px solid #b6d9b6;
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      word-break: keep-all;
+      line-height: 1.65;
+    }
+    /* Post form */
+    .board-form {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .board-form-row { display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
+    .bf-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .bf-group.item-group { flex: 0 0 220px; }
+    .bf-group.msg-group  { flex: 1; min-width: 200px; }
+    .bf-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .bf-group input,
+    .bf-group textarea {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      padding: 0.6rem 0.8rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: white;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .bf-group input:focus,
+    .bf-group textarea:focus { outline: none; border-color: var(--green); }
+    .bf-group textarea { min-height: 90px; resize: vertical; }
+    .post-btn {
+      flex-shrink: 0;
+      padding: 0.62rem 1.4rem;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      align-self: flex-end;
+    }
+    .post-btn:hover { background: var(--green-dark); }
+
+    /* Board posts */
+    #board-posts { display: flex; flex-direction: column; gap: 0.85rem; }
+    .board-post {
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--green);
+    }
+    .post-item-tag {
+      display: inline-block;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      margin-bottom: 0.45rem;
+    }
+    .post-msg {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--text);
+      word-break: keep-all;
+      white-space: pre-wrap;
+    }
+    .post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.6rem;
+    }
+    .post-date { font-size: 0.75rem; color: var(--muted); }
+    .post-del-btn {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--red);
+      background: none;
+      border: 1px solid var(--red);
+      border-radius: 5px;
+      padding: 0.15rem 0.55rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .post-del-btn:hover { background: var(--red-light); }
+    .board-empty {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.93);
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #lightbox.open { display: flex; }
+    #lb-img {
+      max-width: min(92vw, 940px);
+      max-height: 74vh;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
+    }
+    #lb-title {
+      color: rgba(255,255,255,0.88);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 0.9rem;
+      text-align: center;
+      max-width: 80vw;
+    }
+    #lb-close {
+      position: fixed;
+      top: 1rem; right: 1.6rem;
+      color: white; font-size: 3rem; line-height: 1;
+      cursor: pointer; opacity: 0.75;
+      background: none; border: none;
+    }
+    #lb-close:hover { opacity: 1; }
+    .lb-nav { display: flex; gap: 1rem; margin-top: 0.9rem; }
+    .lb-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: white;
+      padding: 0.5rem 1.35rem;
+      border-radius: 6px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 600;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .lb-btn:hover { background: rgba(255,255,255,0.24); }
+
+    /* ── Admin Password Modal ── */
+    .modal-bg {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 3000;
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2.1rem 2rem 1.6rem;
+      width: min(390px, 93vw);
+      box-shadow: 0 14px 44px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.3rem; color: var(--green-dark); }
+    .modal-box p  { font-size: 0.87rem; color: var(--muted); margin-bottom: 1.15rem; }
+    #pw-input {
+      width: 100%;
+      padding: 0.68rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 1rem;
+      font-family: inherit; margin-bottom: 0.85rem;
+      transition: border-color 0.15s;
+    }
+    #pw-input:focus { outline: none; border-color: var(--green); }
+    .modal-btns { display: flex; gap: 0.65rem; }
+    .modal-btns button {
+      flex: 1; padding: 0.62rem; border-radius: 8px; border: none;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    #pw-cancel { background: var(--border); color: var(--text); }
+    #pw-cancel:hover { background: #cdd8cd; }
+    #pw-submit { background: var(--green); color: white; }
+    #pw-submit:hover { background: var(--green-dark); }
+    .pw-error { color: var(--red); font-size: 0.83rem; margin-top: 0.65rem; min-height: 1.2em; font-weight: 600; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    /* ── Admin button strip — bottom of page ── */
+    #admin-strip {
+      text-align: center;
+      padding: 0.9rem 1rem 1.75rem;
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .admin-btn {
+      background: #e0e8e0;
+      border: 1.5px solid #c0d0c0;
+      color: var(--muted);
+      padding: 0.4rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .admin-btn:hover  { background: #cddacd; color: var(--green-dark); }
+    .admin-btn.active { background: var(--amber); border-color: var(--amber); color: white; }
+    .admin-btn.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <h1>&#127968; Garage Give Away</h1>
+  <div class="announcement-area">
+    <div id="announcement-display" class="announcement-display">친애하고 존경하고 아끼는 교수님들, 아시다시피 저의 한국행으로 집 정리를 하게되었습니다. 생활물품들을 버리는 대신 환경을 보존하고 또 교수님들이 혹시 필요할 물건들이 있다면 화면 아래 메모 남겨주시고 오셔서 가져가시면 되겠습니다.</div>
+    <input id="announcement-edit" class="announcement-edit" type="text"
+      placeholder="&#9998; 공지사항 입력 / Type an announcement..."
+      oninput="updateAnnouncement(this.value)">
+  </div>
+  <div class="header-meta">
+    Everything is FREE &nbsp;&nbsp;&#183;&nbsp;&nbsp; First come, first served
+  </div>
+</header>
+
+<!-- ── Admin edit banner (appears when edit mode is active) ── -->
+<div id="edit-banner">
+  &#9998;&nbsp; Admin Edit Mode &mdash; Changes save automatically
+  <button class="banner-btn" id="scan-btn" onclick="scanForNewPhotos()">&#128247; Scan Folder for New Photos</button>
+  <button class="banner-btn" onclick="addNewItem()">+ Add Blank Item</button>
+  <button class="banner-btn" onclick="resetToDefaults()">Reset All to Defaults</button>
+</div>
+
+<!-- ── Item grid ── -->
+<div class="grid" id="grid"></div>
+
+<!-- ── Bulletin Board ── -->
+<section id="board-section">
+  <div class="board-heading">
+    <h2>&#128172; Questions &amp; Inquiries</h2>
+  </div>
+
+  <div class="board-korean-notice">
+    원하시는 물건 가지러 오시는 날짜, 시간 알려주시면 대기할게요 &#128522;
+  </div>
+
+  <form class="board-form" onsubmit="submitPost(event)">
+    <div class="board-form-row">
+      <div class="bf-group item-group">
+        <label for="board-item">Item # or Name</label>
+        <input type="text" id="board-item" placeholder="e.g. Item #5 — Firewood">
+      </div>
+      <div class="bf-group msg-group">
+        <label for="board-msg">Message &nbsp;*</label>
+        <textarea id="board-msg"
+          placeholder="메세지를 남겨 주세요 / Leave your message here..." required></textarea>
+      </div>
+      <button type="submit" class="post-btn">&#128172; Post</button>
+    </div>
+  </form>
+
+  <div id="board-posts"></div>
+</section>
+
+<!-- ── Lightbox ── -->
+<div id="lightbox">
+  <button id="lb-close">&times;</button>
+  <img id="lb-img" src="" alt="">
+  <div id="lb-title"></div>
+  <div class="lb-nav" id="lb-nav">
+    <button class="lb-btn" id="lb-prev">&#8592; Prev</button>
+    <button class="lb-btn" id="lb-next">Next &#8594;</button>
+  </div>
+</div>
+
+<!-- ── Admin Password Modal ── -->
+<div id="pw-modal" class="modal-bg">
+  <div class="modal-box">
+    <h3>&#128274; Admin Access</h3>
+    <p>Enter the admin password to edit items, descriptions, and availability.</p>
+    <input type="password" id="pw-input" placeholder="Password"
+      autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') submitPw()">
+    <div class="modal-btns">
+      <button id="pw-cancel" onclick="cancelPw()">Cancel</button>
+      <button id="pw-submit" onclick="submitPw()">Enter</button>
+    </div>
+    <div class="pw-error" id="pw-error"></div>
+  </div>
+</div>
+
+
+<!-- ── Admin button — bottom of page ── -->
+<div id="admin-strip">
+  <button class="admin-btn" id="admin-btn" onclick="requestEditMode()">&#9998; Admin Edit</button>
+  <button class="admin-btn active hidden" id="done-btn" onclick="exitEditMode()">&#10003; Done Editing</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin password  —  change this string to update the password
+// ─────────────────────────────────────────────────────────────────────────────
+const ADMIN_PW = 'Jiho2006';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Default item catalogue
+// ─────────────────────────────────────────────────────────────────────────────
+const DEFAULT_ITEMS = [
+  { id:47, title:"Dinnerware, Glass Storage Containers & Thermos",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956.jpg","KakaoTalk_20260512_141736956_01.jpg","KakaoTalk_20260512_141736956_03.jpg","KakaoTalk_20260512_141736956_04.jpg","KakaoTalk_20260512_141736956_05.jpg"] },
+  { id:48, title:"J.A. Henckels Knife Block Set",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_02.jpg","KakaoTalk_20260512_141736956_07.jpg","KakaoTalk_20260512_141736956_08.jpg","KakaoTalk_20260512_141736956_09.jpg"] },
+  { id:50, title:"Silverware / Flatware Set",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_06.jpg"] },
+  { id:51, title:"Crystal Cut-Glass Wine Goblets (Set of 4)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_10.jpg"] },
+  { id:52, title:"RCR Provenza Champagne Flutes (Boxed)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_11.jpg"] },
+  { id:53, title:"Gold-Trim Decorative Plates & Bowls",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_12.jpg","KakaoTalk_20260512_141736956_13.jpg"] },
+  { id:54, title:"Winix Air Purifier",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583.jpg"] },
+  { id:55, title:"Dual Combo Shower Head System",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583_01.jpg","KakaoTalk_20260512_152827583_02.jpg"] },
+  { id:56, title:"Wall-Mounted Wooden Shelf Unit (6-Cubby)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583_03.jpg"] },
+  { id:57, title:"McKesson Washcloths Fresh Scent (2 Cases)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171.jpg","KakaoTalk_20260512_153350171_01.jpg"] },
+  { id:1,  title:"Pet Exercise Pen / Playpen",
+    desc:"",
+    imgs:["20260412_172028.jpg","20260412_172034.jpg","20260412_172044.jpg"] },
+  { id:2,  title:"Oil Change Kit — Funnels, Tools, Drain Pan & Collection Jug",
+    desc:"",
+    imgs:["20260412_172218.jpg","20260412_172239.jpg","20260426_165637.jpg","20260426_165631.jpg","20260426_165646.jpg"] },
+  { id:4,  title:"Corded Handheld Vacuum",
+    desc:"",
+    imgs:["20260412_173054.jpg"] },
+  { id:5,  title:"Firewood Bundles (2)",
+    desc:"",
+    imgs:["20260426_162732.jpg","20260426_162740.jpg"] },
+  { id:6,  title:"Ballport Tennis Ball Hopper + Balls",
+    desc:"",
+    imgs:["20260426_162900.jpg","20260426_162857.jpg","20260426_162924.jpg"] },
+  { id:7,  title:"Table Tennis Set (Net, 3 Paddles, Bag)",
+    desc:"",
+    imgs:["20260426_163243.jpg","20260426_163149.jpg","20260426_163203.jpg"] },
+  { id:9,  title:"2-Shelf Shoe Rack",
+    desc:"",
+    imgs:["20260426_163402.jpg"] },
+  { id:10, title:"Ping Pong Solo Trainer",
+    desc:"",
+    imgs:["20260426_163518.jpg"] },
+  { id:11, title:"HP LaserJet 30A Toner Cartridge",
+    desc:"",
+    imgs:["20260426_163847.jpg"] },
+  { id:12, title:"ALDI Insulated Tote Bag (Large)",
+    desc:"",
+    imgs:["20260426_163945.jpg","20260426_163948.jpg"] },
+  { id:13, title:"Penn Tennis Balls — Case (12 Cans / 36 Balls)",
+    desc:"",
+    imgs:["20260426_164118.jpg"] },
+  { id:14, title:"Tecnifibre NRG2 Tennis String",
+    desc:"",
+    imgs:["20260426_164206.jpg"] },
+  { id:15, title:"Heavy-Duty Metal Shelving Unit",
+    desc:"",
+    imgs:["20260426_164700.jpg","20260426_164703.jpg"] },
+  { id:18, title:"Leaf Rake",
+    desc:"",
+    imgs:["20260426_165816.jpg"] },
+  { id:19, title:"Folding Stadium Seat / Bleacher Cushion",
+    desc:"",
+    imgs:["20260426_170039.jpg","20260426_170107.jpg"] },
+  { id:20, title:"Lasko Pedestal Fan",
+    desc:"",
+    imgs:["20260426_170353.jpg","20260426_170347.jpg"] },
+  { id:21, title:"Tower Fan",
+    desc:"",
+    imgs:["20260426_170357.jpg","20260426_170347.jpg"] },
+  { id:22, title:"Bicycle Hand Pump",
+    desc:"",
+    imgs:["20260426_170518.jpg"] },
+  { id:23, title:"Paper Trimmer + Stapler",
+    desc:"",
+    imgs:["20260426_171132.jpg","20260426_171139.jpg"] },
+  { id:24, title:"Aquarium Light Fixture",
+    desc:"",
+    imgs:["20260426_172037.jpg"] },
+  { id:25, title:"Camera Tripod",
+    desc:"",
+    imgs:["20260426_173101.jpg"] },
+  { id:27, title:"Framed Wall Art — White Flowers",
+    desc:"",
+    imgs:["20260426_174047.jpg"] },
+  { id:28, title:"Canvas Wall Art — Watercolor Wildflowers",
+    desc:"",
+    imgs:["20260426_174128.jpg"] },
+  { id:29, title:"Cork Bulletin Board (Large)",
+    desc:"",
+    imgs:["20260426_174220.jpg"] },
+  { id:30, title:"Mobil 1 0W-20 Full Synthetic Motor Oil (2 × 5 qt)",
+    desc:"",
+    imgs:["20260426_174644.jpg"] },
+  { id:31, title:"Assorted Hardware & Fasteners",
+    desc:"",
+    imgs:["20260426_175244.jpg","20260426_175248.jpg"] },
+  { id:32, title:"Pegboard Tool Collection",
+    desc:"",
+    imgs:["20260426_175325.jpg","20260426_175327.jpg"] },
+  { id:33, title:"Germ-X Hand Sanitizer (3 × 32 oz)",
+    desc:"",
+    imgs:["20260426_175436.jpg"] },
+  { id:34, title:"Cuisinart Pizza Peel — Stainless Steel",
+    desc:"",
+    imgs:["20260426_175751.jpg"] },
+  { id:35, title:"Green Mesh Tarp / Shade Cloth",
+    desc:"",
+    imgs:["20260426_180013.jpg"] },
+  { id:36, title:"Folding Utility Wagon / Cart",
+    desc:"",
+    imgs:["20260426_180240.jpg"] },
+  { id:37, title:"Trunk-Mount Bike Rack (3 Bikes)",
+    desc:"",
+    imgs:["20260426_180802.jpg"] },
+  { id:38, title:"Floating Wood Shelves + Brackets (Pair)",
+    desc:"",
+    imgs:["20260426_180953.jpg"] },
+  { id:39, title:"Large Whiteboard / Dry-Erase Board",
+    desc:"",
+    imgs:["20260426_181212.jpg"] },
+  { id:40, title:"Extension Cords — Large Assortment",
+    desc:"",
+    imgs:["20260426_181609.jpg","20260426_181648.jpg"] },
+  { id:41, title:"Car Roof Rack Crossbars (Pair)",
+    desc:"",
+    imgs:["20260426_181759.jpg"] },
+  { id:42, title:"Telescoping Cargo / Load Bar",
+    desc:"",
+    imgs:["20260426_181903.jpg"] },
+  { id:43, title:"Dell Network Switch (with Cables & Adapter)",
+    desc:"",
+    imgs:["20260426_182459.jpg","20260426_182511.jpg"] },
+  { id:44, title:"Black+Decker Upright Vacuum with Attachments",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141657692_09.jpg","KakaoTalk_20260512_141657692_10.jpg","KakaoTalk_20260512_141657692.jpg","KakaoTalk_20260512_141657692_01.jpg","KakaoTalk_20260512_141657692_07.jpg","KakaoTalk_20260512_141657692_08.jpg"] },
+  { id:45, title:"Wire Storage Baskets — Set of 4",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141657692_06.jpg","KakaoTalk_20260512_141657692_02.jpg","KakaoTalk_20260512_141657692_03.jpg","KakaoTalk_20260512_141657692_04.jpg","KakaoTalk_20260512_141657692_05.jpg"] },
+  { id:46, title:"Heavy-Duty Orange Extension Cord (Long)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141657692_11.jpg"] },
+  { id:47, title:"Dishes & Bowls Collection",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956.jpg","KakaoTalk_20260512_141736956_01.jpg","KakaoTalk_20260512_141736956_03.jpg"] },
+  { id:48, title:"Glass Food Storage Containers",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_05.jpg"] },
+  { id:49, title:"Silverware & Flatware Set",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_06.jpg"] },
+  { id:50, title:"Crystal Wine Glasses (Set of 4)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_10.jpg"] },
+  { id:51, title:"Gold-Rimmed Decorative Dishes",
+    desc:"",
+    imgs:["KakaoTalk_20260512_141736956_12.jpg","KakaoTalk_20260512_141736956_13.jpg"] },
+  { id:52, title:"Winix Air Purifier",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583.jpg","KakaoTalk_20260512_153350171_14.jpg"] },
+  { id:53, title:"Dual Shower Head with Handheld Sprayer",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583_01.jpg","KakaoTalk_20260512_152827583_02.jpg","KakaoTalk_20260512_153350171_15.jpg","KakaoTalk_20260512_153350171_16.jpg"] },
+  { id:54, title:"Wall-Mounted Wood Shelf Unit",
+    desc:"",
+    imgs:["KakaoTalk_20260512_152827583_03.jpg","KakaoTalk_20260512_153350171_17.jpg"] },
+  { id:55, title:"McKesson Disposable Washcloths (Bulk)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_01.jpg"] },
+  { id:56, title:"Cuchen Rice Cooker (WM-0610US)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_02.jpg"] },
+  { id:57, title:"Ninja Professional Blender (1000W)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_03.jpg"] },
+  { id:58, title:"Soundbar",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_04.jpg"] },
+  { id:59, title:"Klipsch Reference Soundbar",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_05.jpg"] },
+  { id:60, title:"Decorative Shell Bonsai Tree (Large)",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_06.jpg","KakaoTalk_20260512_153350171_07.jpg"] },
+  { id:61, title:"Long Swing-Arm Wall Lamp",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_08.jpg"] },
+  { id:62, title:"Medify Air Tower Air Purifier",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_09.jpg"] },
+  { id:63, title:"Primo Water Dispenser / Cooler",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_10.jpg"] },
+  { id:64, title:"Keurig Single-Serve Coffee Maker",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_11.jpg","KakaoTalk_20260512_153350171_12.jpg"] },
+  { id:65, title:"Stainless Steel Step Trash Can",
+    desc:"",
+    imgs:["KakaoTalk_20260512_153350171_13.jpg"] },
+  { id:66, title:"Adjustable Arm Desk Lamp",
+    desc:"",
+    imgs:["light_fixture.jpg"] },
+  { id:67, title:"Leaf Rake",
+    desc:"",
+    imgs:["leaf_rake.jpg","leaf_rake2.jpg"] },
+  { id:68, title:"Trunk-Mount Bicycle Rack",
+    desc:"",
+    imgs:["bicycle_car_rack.jpg"] },
+  { id:69, title:"KF94 더 마스크 (Korean Masks)",
+    desc:"",
+    imgs:["20260513_100540.jpg"] },
+  { id:70, title:"Pegboard Tool Assortment",
+    desc:"",
+    imgs:["20260513_102600.jpg","20260513_102602.jpg","20260513_102605.jpg","20260513_102610.jpg"] },
+  { id:71, title:"Cobra 25 ft Drain Auger",
+    desc:"",
+    imgs:["20260513_102648.jpg","20260513_102654.jpg"] }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Item state  (localStorage)
+// ─────────────────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'garage-v13';
+const ANNOUNCE_KEY = 'garage-announce-v1';
+const DEFAULT_ANNOUNCEMENT = '친애하고 존경하고 아끼는 교수님들, 아시다시피 저의 한국행으로 집 정리를 하게되었습니다. 생활물품들을 버리는 대신 환경을 보존하고 또 교수님들이 혹시 필요할 물건들이 있다면 화면 아래 메모 남겨주시고 오셔서 가져가시면 되겠습니다.';
+let items = [], gone = {}, imgIdx = {}, announcement = '';
+
+function loadAll() {
+  // Load announcement from its own key so it survives item storage key bumps
+  try { announcement = localStorage.getItem(ANNOUNCE_KEY) || ''; } catch(e) { announcement = ''; }
+  // Migrate: if old key had an announcement and new key has none, carry it forward
+  if (!announcement) {
+    try {
+      for (const oldKey of ['garage-v3','garage-v2','garage-v1']) {
+        const old = JSON.parse(localStorage.getItem(oldKey) || 'null');
+        if (old && old.announcement) { announcement = old.announcement; break; }
+      }
+    } catch(e) {}
+  }
+  if (!announcement) announcement = DEFAULT_ANNOUNCEMENT;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      items = d.items || deepCloneDefaults();
+      gone  = d.gone  || {};
+      imgIdx = d.imgIdx || {};
+      return;
+    }
+  } catch(e) {}
+  items = deepCloneDefaults();
+  gone = {}; imgIdx = {};
+}
+function saveAll() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, gone, imgIdx }));
+  try { localStorage.setItem(ANNOUNCE_KEY, announcement); } catch(e) {}
+}
+function deepCloneDefaults() {
+  return DEFAULT_ITEMS.map(i => ({ ...i, imgs: [...i.imgs] }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bulletin board  (localStorage)
+// ─────────────────────────────────────────────────────────────────────────────
+const BOARD_KEY = 'garage-board-v1';
+
+function loadPosts() {
+  try { return JSON.parse(localStorage.getItem(BOARD_KEY)) || []; }
+  catch(e) { return []; }
+}
+function savePosts(posts) {
+  localStorage.setItem(BOARD_KEY, JSON.stringify(posts));
+}
+
+function submitPost(e) {
+  e.preventDefault();
+  const item = document.getElementById('board-item').value.trim();
+  const msg  = document.getElementById('board-msg').value.trim();
+  if (!msg) return;
+
+  const posts = loadPosts();
+  posts.unshift({
+    id:   Date.now(),
+    item: item,
+    msg:  msg,
+    date: new Date().toLocaleString('ko-KR', {
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit'
+    })
+  });
+  savePosts(posts);
+  document.getElementById('board-item').value = '';
+  document.getElementById('board-msg').value  = '';
+  renderBoard();
+}
+
+function deletePost(id) {
+  savePosts(loadPosts().filter(p => p.id !== id));
+  renderBoard();
+}
+
+function renderBoard() {
+  const posts     = loadPosts();
+  const container = document.getElementById('board-posts');
+  if (posts.length === 0) {
+    container.innerHTML =
+      '<div class="board-empty">아직 메세지가 없습니다. / No messages yet — be the first to post!</div>';
+    return;
+  }
+  container.innerHTML = posts.map(p => `
+    <div class="board-post">
+      ${p.item ? `<span class="post-item-tag">&#128722; ${esc(p.item)}</span>` : ''}
+      <div class="post-msg">${esc(p.msg)}</div>
+      <div class="post-footer">
+        <span class="post-date">&#128336; ${esc(p.date)}</span>
+        ${editMode
+          ? `<button class="post-del-btn" onclick="deletePost(${p.id})">Delete</button>`
+          : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Announcement
+// ─────────────────────────────────────────────────────────────────────────────
+function updateAnnouncement(val) {
+  announcement = val;
+  document.getElementById('announcement-display').textContent = val;
+  saveAll();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin / password
+// ─────────────────────────────────────────────────────────────────────────────
+let editMode = false;
+
+function requestEditMode() {
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  document.getElementById('pw-modal').classList.add('open');
+  setTimeout(() => document.getElementById('pw-input').focus(), 80);
+}
+function cancelPw() { document.getElementById('pw-modal').classList.remove('open'); }
+function submitPw() {
+  if (document.getElementById('pw-input').value === ADMIN_PW) {
+    document.getElementById('pw-modal').classList.remove('open');
+    enterEditMode();
+  } else {
+    document.getElementById('pw-error').textContent = 'Incorrect password — please try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function enterEditMode() {
+  editMode = true;
+  document.getElementById('admin-btn').classList.add('hidden');
+  document.getElementById('done-btn').classList.remove('hidden');
+  document.getElementById('edit-banner').classList.add('visible');
+  document.getElementById('announcement-display').style.display = 'none';
+  document.getElementById('announcement-edit').value = announcement;
+  document.getElementById('announcement-edit').classList.add('visible');
+  render();
+  renderBoard();
+}
+function exitEditMode() {
+  editMode = false;
+  document.getElementById('admin-btn').classList.remove('hidden');
+  document.getElementById('done-btn').classList.add('hidden');
+  document.getElementById('edit-banner').classList.remove('visible');
+  document.getElementById('announcement-display').style.display = '';
+  document.getElementById('announcement-edit').classList.remove('visible');
+  render();
+  renderBoard();
+}
+function resetToDefaults() {
+  if (!confirm('Reset ALL items, descriptions, images, and the announcement back to defaults?\nThis also clears all "Gone" marks. This cannot be undone.')) return;
+  items = deepCloneDefaults();
+  gone = {}; imgIdx = {}; announcement = '';
+  document.getElementById('announcement-edit').value = '';
+  document.getElementById('announcement-display').textContent = '';
+  saveAll(); render();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Edit operations
+// ─────────────────────────────────────────────────────────────────────────────
+function updateTitle(id, v) { const i = items.find(x => x.id===id); if(i){i.title=v; saveAll();} }
+function updateDesc(id, v)  { const i = items.find(x => x.id===id); if(i){i.desc=v;  saveAll();} }
+
+function switchThumb(id, idx) {
+  const item = items.find(i => i.id===id); if(!item) return;
+  imgIdx[id] = idx; saveAll();
+  const card = document.querySelector(`.card[data-id="${id}"]`); if(!card) return;
+  const img = card.querySelector('.img-wrap img'); if(img) img.src = item.imgs[idx];
+  card.querySelectorAll('.thumb-item').forEach((t,i) => t.classList.toggle('active', i===idx));
+}
+function deleteImage(e, id, idx) {
+  e.stopPropagation();
+  const item = items.find(i => i.id===id); if(!item) return;
+  if(item.imgs.length<=1){ alert('Each item needs at least one photo.'); return; }
+  item.imgs.splice(idx,1);
+  if((imgIdx[id]||0) >= item.imgs.length) imgIdx[id] = item.imgs.length-1;
+  saveAll(); render();
+}
+function addPhoto(id, fileInput) {
+  if(!fileInput.files.length) return;
+  const filename = fileInput.files[0].name;
+  const item = items.find(i => i.id===id);
+  if(item && !item.imgs.includes(filename)){
+    item.imgs.push(filename); imgIdx[id] = item.imgs.length-1;
+    saveAll(); render();
+  }
+  fileInput.value='';
+}
+function deleteItem(id) {
+  if(!confirm('Remove Item #'+id+' permanently?')) return;
+  const idx = items.findIndex(i => i.id===id);
+  if(idx!==-1){ items.splice(idx,1); delete gone[id]; delete imgIdx[id]; }
+  saveAll(); render();
+}
+function toggleGone(id) { gone[id]=!gone[id]; saveAll(); render(); }
+function addNewItem() {
+  const maxId = items.reduce((m,i)=>Math.max(m,i.id),0);
+  const newId = maxId+1;
+  items.push({ id:newId, title:'New Item #'+newId, desc:'', imgs:[''] });
+  saveAll(); render();
+  setTimeout(()=>{ const c=document.querySelector(`.card[data-id="${newId}"]`); if(c) c.scrollIntoView({behavior:'smooth',block:'center'}); },120);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lightbox
+// ─────────────────────────────────────────────────────────────────────────────
+let lbId=null, lbImgI=0;
+function openLightbox(id, idx) { lbId=id; lbImgI=idx; refreshLb(); document.getElementById('lightbox').classList.add('open'); }
+function refreshLb() {
+  const item = items.find(i=>i.id===lbId);
+  document.getElementById('lb-img').src = item.imgs[lbImgI];
+  const multi = item.imgs.length>1;
+  document.getElementById('lb-title').textContent =
+    'Item #'+item.id+' — '+item.title+(multi ? '  ('+(lbImgI+1)+' / '+item.imgs.length+')' : '');
+  document.getElementById('lb-nav').style.display = multi ? 'flex' : 'none';
+}
+function lbStep(dir) {
+  const item=items.find(i=>i.id===lbId);
+  lbImgI=(lbImgI+dir+item.imgs.length)%item.imgs.length;
+  refreshLb();
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+document.getElementById('lightbox').addEventListener('click', e=>{ if(e.target===document.getElementById('lightbox')) closeLightbox(); });
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', e=>{ e.stopPropagation(); lbStep(-1); });
+document.getElementById('lb-next').addEventListener('click', e=>{ e.stopPropagation(); lbStep(1); });
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key==='Escape') closeLightbox();
+  if(e.key==='ArrowLeft') lbStep(-1);
+  if(e.key==='ArrowRight') lbStep(1);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render items
+// ─────────────────────────────────────────────────────────────────────────────
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  items.forEach(item => {
+    const isGone = !!gone[item.id];
+    const ci     = Math.min(imgIdx[item.id]||0, Math.max(0, item.imgs.length-1));
+    const mainSrc = item.imgs[ci]||'';
+
+    const card = document.createElement('div');
+    card.className = 'card'+(isGone?' gone':'')+(editMode?' edit-card':'');
+    card.dataset.id = item.id;
+
+    if (editMode) {
+      card.draggable = true;
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragover',  handleDragOver);
+      card.addEventListener('dragleave', handleDragLeave);
+      card.addEventListener('drop',      handleDrop);
+      card.addEventListener('dragend',   handleDragEnd);
+    }
+
+    if (editMode) {
+      const thumbsHtml = item.imgs.map((img,i) => `
+        <div class="thumb-item${i===ci?' active':''}" onclick="switchThumb(${item.id},${i})">
+          <img src="${esc(img)}" alt="">
+          <button class="thumb-del" onclick="deleteImage(event,${item.id},${i})" title="Remove">&times;</button>
+        </div>`).join('');
+
+      card.innerHTML = `
+        <div class="item-badge">Item #${item.id}</div>
+        <div class="drag-handle" title="Drag to reorder">&#8942;&#8942;</div>
+        <div class="img-wrap">
+          <img src="${esc(mainSrc)}" alt="${esc(item.title)}"
+            onerror="this.parentNode.classList.add('img-error')">
+        </div>
+        <div class="thumb-strip">
+          ${thumbsHtml}
+          <label class="add-photo-label" title="Select image file from this folder">
+            <span class="plus">+</span><span>Add Photo</span>
+            <input type="file" accept="image/*" style="display:none" onchange="addPhoto(${item.id},this)">
+          </label>
+        </div>
+        <div class="card-body">
+          <input class="edit-title" value="${esc(item.title)}"
+            oninput="updateTitle(${item.id},this.value)" placeholder="Item title">
+          <textarea class="edit-desc"
+            oninput="updateDesc(${item.id},this.value)"
+            placeholder="Short description">${esc(item.desc)}</textarea>
+        </div>
+        <div class="card-footer">
+          <button class="delete-item-btn" onclick="deleteItem(${item.id})">&#128465; Delete</button>
+          <button class="toggle-btn ${isGone?'btn-available':'btn-gone'}"
+            onclick="toggleGone(${item.id})">
+            ${isGone?'Mark Available':'Mark as Gone'}
+          </button>
+        </div>`;
+    } else {
+      const goneHtml = isGone
+        ? `<div class="gone-overlay">
+             <svg class="gone-circle" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+               <circle cx="50" cy="50" r="45" fill="rgba(192,57,43,0.93)"/>
+               <circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="6"/>
+               <line x1="19" y1="19" x2="81" y2="81" stroke="white" stroke-width="15" stroke-linecap="round"/>
+             </svg>
+           </div>` : '';
+
+      const thumbsHtml = item.imgs.length > 1
+        ? `<div class="pub-thumb-strip">${item.imgs.slice(1).map((src,i) =>
+            `<img class="pub-thumb" src="${esc(src)}" loading="lazy"
+              alt="${esc(item.title)} photo ${i+2}"
+              onerror="this.style.display='none'"
+              onclick="openLightbox(${item.id},${i+1})">`
+          ).join('')}</div>` : '';
+
+      card.innerHTML = `
+        <div class="item-badge">Item #${item.id}</div>
+        <div class="img-wrap" onclick="openLightbox(${item.id},0)">
+          <img src="${esc(item.imgs[0]||'')}" alt="${esc(item.title)}" loading="lazy"
+            onerror="this.parentNode.classList.add('img-error')">
+          ${goneHtml}
+        </div>
+        ${thumbsHtml}
+        <div class="card-body">
+          <div class="item-num-label">Item #${item.id}</div>
+          <div class="card-title">${esc(item.title)}</div>
+          <div class="card-desc">${esc(item.desc)}</div>
+        </div>
+        <div class="card-footer">
+          <span class="status ${isGone?'gone-status':'available'}">${isGone?'Gone':'Available'}</span>
+        </div>`;
+    }
+
+    grid.appendChild(card);
+  });
+
+  if (editMode) {
+    const addTile = document.createElement('div');
+    addTile.className = 'add-item-card';
+    addTile.innerHTML = '<div class="big-plus">+</div><div>Add New Item</div>';
+    addTile.onclick = addNewItem;
+    grid.appendChild(addTile);
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scan folder for new photos  (File System Access API — Chrome / Edge)
+// ─────────────────────────────────────────────────────────────────────────────
+let cachedDirHandle = null;
+
+async function scanForNewPhotos() {
+  if (!('showDirectoryPicker' in window)) {
+    alert(
+      'Your browser does not support automatic folder scanning.\n\n' +
+      'Please open this page in Chrome or Edge, then try again.\n\n' +
+      'Alternatively, use the "+ Add Blank Item" button and add photos manually.'
+    );
+    return;
+  }
+
+  const btn = document.getElementById('scan-btn');
+  btn.textContent = '⏳ Scanning…';
+  btn.disabled = true;
+
+  try {
+    // Re-use the stored handle within the same session; pick again if expired
+    if (!cachedDirHandle) {
+      cachedDirHandle = await window.showDirectoryPicker({ mode: 'read' });
+    }
+  } catch(e) {
+    cachedDirHandle = null;
+    btn.textContent = '📷 Scan Folder for New Photos';
+    btn.disabled = false;
+    return; // user cancelled the picker
+  }
+
+  // Build a set of every image filename already referenced by any item
+  const referenced = new Set();
+  items.forEach(item => item.imgs.forEach(f => { if (f) referenced.add(f); }));
+
+  const imageExts = new Set(['jpg','jpeg','png','gif','webp','heic','heif','avif']);
+  const newImages  = [];
+
+  try {
+    for await (const [name, handle] of cachedDirHandle.entries()) {
+      if (handle.kind !== 'file') continue;
+      const ext = name.split('.').pop().toLowerCase();
+      if (!imageExts.has(ext)) continue;
+      if (referenced.has(name)) continue;
+      newImages.push(name);
+    }
+  } catch(e) {
+    // Permission may have expired — clear handle so next click re-prompts
+    cachedDirHandle = null;
+    btn.textContent = '📷 Scan Folder for New Photos';
+    btn.disabled = false;
+    alert('Folder access expired. Please click "Scan Folder for New Photos" again.');
+    return;
+  }
+
+  btn.textContent = '📷 Scan Folder for New Photos';
+  btn.disabled = false;
+
+  if (newImages.length === 0) {
+    alert('No new images found — every photo in this folder is already assigned to an item.');
+    return;
+  }
+
+  // Sort alphabetically (camera filenames are typically date-stamped → chronological)
+  newImages.sort();
+
+  // Create one new item per new image
+  const maxId  = items.reduce((m, i) => Math.max(m, i.id), 0);
+  let   nextId = maxId + 1;
+  const newItems = newImages.map(img => ({
+    id:    nextId++,
+    title: 'New Item',
+    desc:  '',
+    imgs:  [img]
+  }));
+
+  // Prepend to front so they appear first in the grid
+  items.unshift(...newItems);
+  saveAll();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  alert(
+    newImages.length + ' new photo' + (newImages.length !== 1 ? 's' : '') +
+    ' added as new item' + (newImages.length !== 1 ? 's' : '') + ' at the top of the list.\n\n' +
+    'Please edit each item\'s title and description, then merge photos if needed.'
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Drag-and-drop reordering (admin edit mode only)
+// ─────────────────────────────────────────────────────────────────────────────
+let dragSrcId = null;
+
+function handleDragStart(e) {
+  dragSrcId = parseInt(this.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragSrcId);
+  // Slight delay so the browser snapshot doesn't show the faded state
+  setTimeout(() => this.classList.add('dragging'), 0);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  // Highlight only the current target, clear others
+  document.querySelectorAll('.card.drag-over').forEach(c => c.classList.remove('drag-over'));
+  if (!this.classList.contains('dragging')) this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  // Only clear when the pointer truly leaves this card (not just a child element)
+  if (!this.contains(e.relatedTarget)) this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dropId = parseInt(this.dataset.id);
+  if (!dropId || dragSrcId === dropId) return;
+
+  const srcIdx = items.findIndex(i => i.id === dragSrcId);
+  const [moved] = items.splice(srcIdx, 1);           // remove from old position
+  const dropIdx = items.findIndex(i => i.id === dropId);
+  items.splice(dropIdx, 0, moved);                   // insert before drop target
+
+  saveAll();
+  render();
+}
+
+function handleDragEnd(e) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging', 'drag-over'));
+  dragSrcId = null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────────────────────
+loadAll();
+document.getElementById('announcement-display').textContent = announcement;
+render();
+renderBoard();
+</script>
+</body>
+</html>
+
