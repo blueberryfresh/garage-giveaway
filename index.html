@@ -1191,12 +1191,13 @@ function deleteImage(e, id, idx) {
 }
 function addPhoto(id, fileInput) {
   if(!fileInput.files.length) return;
-  const filename = fileInput.files[0].name;
-  const item = items.find(i => i.id===id);
-  if(item && !item.imgs.includes(filename)){
-    item.imgs.push(filename); imgIdx[id] = item.imgs.length-1;
-    saveAll(); render();
-  }
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const item = items.find(i => i.id===id);
+    if(item){ item.imgs.push(e.target.result); imgIdx[id] = item.imgs.length-1; saveAll(); render(); }
+  };
+  reader.readAsDataURL(file);
   fileInput.value='';
 }
 function deleteItem(id) {
@@ -1209,7 +1210,7 @@ function toggleGone(id) { gone[id]=!gone[id]; saveAll(); render(); }
 function addNewItem() {
   const maxId = items.reduce((m,i)=>Math.max(m,i.id),0);
   const newId = maxId+1;
-  items.push({ id:newId, title:'New Item #'+newId, desc:'', imgs:[''] });
+  items.push({ id:newId, title:'New Item #'+newId, desc:'', imgs:[] });
   saveAll(); render();
   setTimeout(()=>{ const c=document.querySelector(`.card[data-id="${newId}"]`); if(c) c.scrollIntoView({behavior:'smooth',block:'center'}); },120);
 }
