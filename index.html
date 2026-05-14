@@ -674,6 +674,40 @@
     .admin-btn:hover  { background: #cddacd; color: var(--green-dark); }
     .admin-btn.active { background: var(--amber); border-color: var(--amber); color: white; }
     .admin-btn.hidden { display: none; }
+    #export-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #export-modal.open { display: flex; }
+    #export-box {
+      background: white;
+      border-radius: 12px;
+      padding: 1.4rem 1.6rem;
+      max-width: 560px;
+      width: 92%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    }
+    #export-box h3 { margin: 0 0 0.7rem; font-size: 1rem; color: var(--green-dark); }
+    #export-box p  { margin: 0 0 0.9rem; font-size: 0.82rem; color: var(--muted); }
+    #export-text {
+      width: 100%;
+      height: 140px;
+      font-size: 0.72rem;
+      font-family: monospace;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 0.5rem;
+      resize: none;
+      box-sizing: border-box;
+    }
+    #export-box .btn-row { display: flex; gap: 0.6rem; margin-top: 0.8rem; justify-content: flex-end; }
+    #export-box .btn-row button { padding: 0.4rem 1rem; border-radius: 8px; border: 1.5px solid #c0d0c0; font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; background: #e0e8e0; color: var(--muted); }
+    #export-box .btn-row button.primary { background: var(--green-dark); border-color: var(--green-dark); color: white; }
   </style>
 </head>
 <body>
@@ -763,6 +797,19 @@
 <div id="admin-strip">
   <button class="admin-btn" id="admin-btn" onclick="requestEditMode()">&#9998; Admin Edit</button>
   <button class="admin-btn active hidden" id="done-btn" onclick="exitEditMode()">&#10003; Done Editing</button>
+  <button class="admin-btn hidden" id="export-btn" onclick="openExportModal()">&#128190; Export Items</button>
+</div>
+
+<div id="export-modal">
+  <div id="export-box">
+    <h3>Export Current Items</h3>
+    <p>Copy this JSON and paste it to Claude to update the HTML file permanently.</p>
+    <textarea id="export-text" readonly></textarea>
+    <div class="btn-row">
+      <button onclick="closeExportModal()">Close</button>
+      <button class="primary" onclick="copyExport()">Copy to Clipboard</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1071,10 +1118,29 @@ function submitPw() {
   }
 }
 
+function openExportModal() {
+  const data = JSON.stringify(items, null, 2);
+  document.getElementById('export-text').value = data;
+  document.getElementById('export-modal').classList.add('open');
+}
+function closeExportModal() {
+  document.getElementById('export-modal').classList.remove('open');
+}
+function copyExport() {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(() => {
+    const btn = document.querySelector('#export-box .primary');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+  });
+}
+
 function enterEditMode() {
   editMode = true;
   document.getElementById('admin-btn').classList.add('hidden');
   document.getElementById('done-btn').classList.remove('hidden');
+  document.getElementById('export-btn').classList.remove('hidden');
   document.getElementById('edit-banner').classList.add('visible');
   document.getElementById('announcement-display').style.display = 'none';
   document.getElementById('announcement-edit').value = announcement;
@@ -1086,6 +1152,7 @@ function exitEditMode() {
   editMode = false;
   document.getElementById('admin-btn').classList.remove('hidden');
   document.getElementById('done-btn').classList.add('hidden');
+  document.getElementById('export-btn').classList.add('hidden');
   document.getElementById('edit-banner').classList.remove('visible');
   document.getElementById('announcement-display').style.display = '';
   document.getElementById('announcement-edit').classList.remove('visible');
