@@ -997,13 +997,16 @@ const DEFAULT_ITEMS = [
     imgs:["20260513_102600.jpg","20260513_102602.jpg","20260513_102605.jpg","20260513_102610.jpg"] },
   { id:71, title:"막힌 변기/하수구 뚫기 Cobra 25 ft Drain Auger",
     desc:"",
-    imgs:["20260513_102648.jpg","20260513_102654.jpg"] }
+    imgs:["20260513_102648.jpg","20260513_102654.jpg"] },
+  { id:72, title:"New Item #72",
+    desc:"",
+    imgs:[] }
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Item state  (localStorage)
 // ─────────────────────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'garage-v16';
+const STORAGE_KEY = 'garage-v17';
 const ANNOUNCE_KEY = 'garage-announce-v1';
 const DEFAULT_ANNOUNCEMENT = '친애하고 존경하고 아끼는 교수님들, 아시다시피 저의 한국행으로 집 정리를 하게되었습니다. 생활물품들을 버리는 대신 환경을 보존하고 또 교수님들이 혹시 필요할 물건들이 있다면 화면 아래 메모 남겨주시고 오셔서 가져가시면 되겠습니다.';
 let items = [], gone = {}, imgIdx = {}, announcement = '';
@@ -1035,7 +1038,16 @@ function loadAll() {
   gone = {}; imgIdx = {};
 }
 function saveAll() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, gone, imgIdx }));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, gone, imgIdx }));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      alert('⚠️ Storage full!\n\nLocalStorage is full — likely due to large base64 photos.\n\nTip: Use the Export Items button to copy current data to the HTML file, then reload the page to reset storage.');
+    } else {
+      alert('⚠️ Save failed: ' + e.message);
+    }
+    return;
+  }
   try { localStorage.setItem(ANNOUNCE_KEY, announcement); } catch(e) {}
 }
 function deepCloneDefaults() {
@@ -1237,7 +1249,8 @@ function addNewItem() {
   const maxId = items.reduce((m,i)=>Math.max(m,i.id),0);
   const newId = maxId+1;
   items.push({ id:newId, title:'New Item #'+newId, desc:'', imgs:[] });
-  saveAll(); render();
+  saveAll();
+  render();
   setTimeout(()=>{ const c=document.querySelector(`.card[data-id="${newId}"]`); if(c) c.scrollIntoView({behavior:'smooth',block:'center'}); },120);
 }
 
