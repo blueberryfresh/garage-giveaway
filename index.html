@@ -1312,7 +1312,13 @@ function loadAll() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const d = JSON.parse(raw);
-      items = d.items || deepCloneDefaults();
+      // Reconstruct items: DEFAULT_ITEMS images first, then any extra uploaded images
+      items = (d.items || []).map(si => {
+        const def = DEFAULT_ITEMS.find(d => d.id === si.id);
+        const defImgs = def ? def.imgs : [];
+        return { ...si, imgs: [...defImgs, ...si.imgs] };
+      });
+      if (!items.length) items = deepCloneDefaults();
       gone  = d.gone  || {};
       imgIdx = d.imgIdx || {};
       return;
@@ -1322,8 +1328,15 @@ function loadAll() {
   gone = {}; imgIdx = {};
 }
 function saveAll() {
+  // Delta-save: strip DEFAULT_ITEMS images before storing (they're already in the HTML)
+  // This keeps localStorage small regardless of how many catalog photos exist
+  const itemsForStorage = items.map(item => {
+    const def = DEFAULT_ITEMS.find(d => d.id === item.id);
+    const defSet = new Set(def ? def.imgs : []);
+    return { ...item, imgs: item.imgs.filter(img => !defSet.has(img)) };
+  });
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, gone, imgIdx }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: itemsForStorage, gone, imgIdx }));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       openExportModal();
@@ -1473,6 +1486,15 @@ async function downloadUpdatedHTML() {
 
 function clearUploadedPhotos() {
   if (!confirm('Remove all browser-uploaded photos from storage?\n\nItems will revert to their original catalog photos. This frees storage immediately.\n\nTip: Download the HTML first to preserve your uploaded photos!')) return;
+  // Wipe ALL old garage-v* keys first — old keys may be full of base64 and block saving
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('garage-v')) keysToRemove.push(k);
+  }
+  keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+
+  // Strip uploaded (base64) images; keep filename-based catalog images
   items = items.map(item => {
     const def = DEFAULT_ITEMS.find(d => d.id === item.id);
     const kept = item.imgs.filter(img => !img.startsWith('data:'));
@@ -1485,7 +1507,7 @@ function clearUploadedPhotos() {
   saveAll();
   render();
   closeExportModal();
-  alert('Done! Uploaded photos removed. You can now add items and photos again.');
+  alert('Done! Storage cleared. You can now add items and upload photos again.');
 }
 
 function enterEditMode() {
@@ -1535,11 +1557,8 @@ function switchThumb(id, idx) {
 }
 function setFeatured(e, id, idx) {
   e.stopPropagation();
-  if(idx === 0) return;
   const item = items.find(i => i.id===id); if(!item) return;
-  const [img] = item.imgs.splice(idx, 1);
-  item.imgs.unshift(img);
-  imgIdx[id] = 0;
+  imgIdx[id] = idx;
   saveAll(); render();
 }
 function deleteImage(e, id, idx) {
