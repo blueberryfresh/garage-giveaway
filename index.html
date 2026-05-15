@@ -728,6 +728,11 @@
     #export-box .btn-row { display: flex; gap: 0.6rem; margin-top: 0.8rem; justify-content: flex-end; }
     #export-box .btn-row button { padding: 0.4rem 1rem; border-radius: 8px; border: 1.5px solid #c0d0c0; font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; background: #e0e8e0; color: var(--muted); }
     #export-box .btn-row button.primary { background: var(--green-dark); border-color: var(--green-dark); color: white; }
+    #export-box .btn-row button.danger { background: #c0392b; border-color: #c0392b; color: white; }
+    #export-action-btns { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; }
+    #export-action-btns button { width: 100%; padding: 0.55rem 1rem; border-radius: 8px; border: 1.5px solid; font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; }
+    #export-action-btns .dl-btn { background: var(--green-dark); border-color: var(--green-dark); color: white; }
+    #export-action-btns .clr-btn { background: #fff3f3; border-color: #e08080; color: #c0392b; }
   </style>
 </head>
 <body>
@@ -822,12 +827,19 @@
 
 <div id="export-modal">
   <div id="export-box">
-    <h3>Export Current Items</h3>
-    <p>Copy this JSON and paste it to Claude to update the HTML file permanently.</p>
-    <textarea id="export-text" readonly></textarea>
+    <h3>Storage Full — Fix Options</h3>
+    <p>LocalStorage is full from uploaded photos. Choose how to fix it:</p>
+    <div id="export-action-btns">
+      <button class="dl-btn" onclick="downloadUpdatedHTML()">&#128190; Download Updated HTML &mdash; bakes all photos into a new file (then redeploy)</button>
+      <button class="clr-btn" onclick="clearUploadedPhotos()">&#128465; Clear Uploaded Photos &mdash; frees space now (uploaded photos are removed)</button>
+    </div>
+    <details>
+      <summary style="font-size:0.78rem; color:var(--muted); cursor:pointer; margin-bottom:0.4rem;">Copy raw JSON (for Claude)</summary>
+      <textarea id="export-text" readonly></textarea>
+    </details>
     <div class="btn-row">
       <button onclick="closeExportModal()">Close</button>
-      <button class="primary" onclick="copyExport()">Copy to Clipboard</button>
+      <button onclick="copyExport()">Copy JSON</button>
     </div>
   </div>
 </div>
@@ -1042,7 +1054,7 @@ function saveAll() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, gone, imgIdx }));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
-      alert('⚠️ Storage full!\n\nLocalStorage is full — likely due to large base64 photos.\n\nTip: Use the Export Items button to copy current data to the HTML file, then reload the page to reset storage.');
+      openExportModal();
     } else {
       alert('⚠️ Save failed: ' + e.message);
     }
@@ -1159,10 +1171,49 @@ function copyExport() {
   const ta = document.getElementById('export-text');
   ta.select();
   navigator.clipboard.writeText(ta.value).then(() => {
-    const btn = document.querySelector('#export-box .primary');
+    const btn = document.querySelector('#export-box .btn-row button:last-child');
     btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy JSON'; }, 2000);
   });
+}
+
+async function downloadUpdatedHTML() {
+  try {
+    const response = await fetch(window.location.href);
+    let html = await response.text();
+    const newItemsJSON = JSON.stringify(items, null, 2);
+    html = html.replace(/const DEFAULT_ITEMS = \[[\s\S]*?\];/, 'const DEFAULT_ITEMS = ' + newItemsJSON + ';');
+    const newKey = STORAGE_KEY.replace(/(\d+)$/, n => String(parseInt(n) + 1));
+    html = html.replace("const STORAGE_KEY = '" + STORAGE_KEY + "';", "const STORAGE_KEY = '" + newKey + "';");
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+    alert('Downloaded!\n\nSteps:\n1. Replace your index.html with the downloaded file\n2. Commit & push to GitHub\n3. After redeploying, use "Clear Uploaded Photos" to free your browser storage');
+  } catch(err) {
+    alert('Download failed: ' + err.message + '\n\nTry "Copy JSON" instead and send it to Claude.');
+  }
+}
+
+function clearUploadedPhotos() {
+  if (!confirm('Remove all browser-uploaded photos from storage?\n\nItems will revert to their original catalog photos. This frees storage immediately.\n\nTip: Download the HTML first to preserve your uploaded photos!')) return;
+  items = items.map(item => {
+    const def = DEFAULT_ITEMS.find(d => d.id === item.id);
+    const kept = item.imgs.filter(img => !img.startsWith('data:'));
+    return { ...item, imgs: kept.length > 0 ? kept : (def ? [...def.imgs] : []) };
+  });
+  for (const id in imgIdx) {
+    const item = items.find(i => i.id == id);
+    if (item && (imgIdx[id] || 0) >= item.imgs.length) imgIdx[id] = 0;
+  }
+  saveAll();
+  render();
+  closeExportModal();
+  alert('Done! Uploaded photos removed. You can now add items and photos again.');
 }
 
 function enterEditMode() {
