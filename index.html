@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -854,171 +854,443 @@ const ADMIN_PW = 'Jiho2006';
 // Default item catalogue
 // ─────────────────────────────────────────────────────────────────────────────
 const DEFAULT_ITEMS = [
-  { id:1,  title:"강아지 펜스 Pet Exercise Pen / Playpen",
-    desc:"",
-    imgs:["20260412_172028.jpg"] },
-  { id:2,  title:"차 엔진오일 교환 도구/통 Oil Change Kit — Funnels, Tools, Drain Pan & Collection Jug",
-    desc:"",
-    imgs:["20260412_172218.jpg","20260412_172239.jpg","20260426_165637.jpg"] },
-  { id:4,  title:"Corded Handheld Vacuum",
-    desc:"",
-    imgs:["20260412_173054.jpg"] },
-  { id:5,  title:"Firewood Bundles",
-    desc:"",
-    imgs:["20260426_162732.jpg"] },
-  { id:6,  title:"Ballport Tennis Ball Hopper + Balls",
-    desc:"",
-    imgs:["20260426_162900.jpg","20260426_162924.jpg"] },
-  { id:9,  title:"2-Shelf Shoe Rack",
-    desc:"",
-    imgs:["20260426_163402.jpg"] },
-  { id:11, title:"HP LaserJet 30A Toner Cartridge",
-    desc:"",
-    imgs:["20260426_163847.jpg"] },
-  { id:13, title:"Penn Tennis Balls — Case (12 Cans / 36 Balls)",
-    desc:"",
-    imgs:["20260426_164118.jpg"] },
-  { id:14, title:"Tecnifibre NRG2 Tennis String",
-    desc:"",
-    imgs:["20260426_164206.jpg"] },
-  { id:15, title:"Heavy-Duty Metal Shelving Unit",
-    desc:"",
-    imgs:["20260426_164703.jpg"] },
-  { id:21, title:"선풍기 Tower Fan (2개)",
-    desc:"",
-    imgs:["20260426_170347.jpg"] },
-  { id:22, title:"Bicycle Hand Pump",
-    desc:"",
-    imgs:["20260426_170518.jpg"] },
-  { id:23, title:"Paper Trimmer + Stapler",
-    desc:"",
-    imgs:["20260426_171132.jpg"] },
-  { id:24, title:"책상 데스크 Light Fixture",
-    desc:"",
-    imgs:["20260426_172037.jpg","light_fixture.jpg"] },
-  { id:25, title:"Camera Tripod",
-    desc:"",
-    imgs:["20260426_173101.jpg"] },
-  { id:27, title:"손님 방 액자 Framed Wall Art — White Flowers",
-    desc:"",
-    imgs:["20260426_174047.jpg"] },
-  { id:28, title:"손님 방 액자 Canvas Wall Art — Watercolor Wildflowers",
-    desc:"",
-    imgs:["20260426_174128.jpg"] },
-  { id:29, title:"Cork Bulletin Board (Large)",
-    desc:"",
-    imgs:["20260426_174220.jpg"] },
-  { id:30, title:"Mobil 1 0W-20 Full Synthetic Motor Oil (2 × 5 qt)",
-    desc:"",
-    imgs:["20260426_174644.jpg"] },
-  { id:31, title:"Assorted Hardware & Fasteners",
-    desc:"",
-    imgs:["20260426_175244.jpg"] },
-  { id:33, title:"손 세정제 Hand Sanitizer (3 × 32 oz)",
-    desc:"",
-    imgs:["20260426_175436.jpg"] },
-  { id:34, title:"Cuisinart Pizza Peel — Stainless Steel",
-    desc:"",
-    imgs:["20260426_175751.jpg"] },
-  { id:35, title:"뒷뜰 그늘 막이 Green Mesh Tarp / Shade Cloth",
-    desc:"",
-    imgs:["20260426_180013.jpg"] },
-  { id:37, title:"Trunk-Mount Bike Rack (3 Bikes)",
-    desc:"",
-    imgs:["20260426_180802.jpg"] },
-  { id:38, title:"Floating Wood Shelves + Brackets (Pair)",
-    desc:"",
-    imgs:["20260426_180953.jpg"] },
-  { id:39, title:"Large Whiteboard / Dry-Erase Board",
-    desc:"",
-    imgs:["20260426_181212.jpg"] },
-  { id:40, title:"Extension Cords — Large Assortment",
-    desc:"",
-    imgs:["20260426_181609.jpg"] },
-  { id:41, title:"Car Roof Rack Crossbars (Pair)",
-    desc:"",
-    imgs:["20260426_181759.jpg"] },
-  { id:42, title:"턱걸이 바",
-    desc:"",
-    imgs:["20260426_181903.jpg"] },
-  { id:43, title:"Dell Network Switch (with Cables & Adapter)",
-    desc:"",
-    imgs:["20260426_182511.jpg"] },
-  { id:44, title:"Black+Decker Upright Vacuum with Attachments",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141657692_09.jpg","KakaoTalk_20260512_141657692_10.jpg"] },
-  { id:45, title:"Wire Storage Baskets — Set of 4",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141657692_06.jpg"] },
-  { id:47, title:"Dishes & Bowls Collection",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141736956.jpg"] },
-  { id:49, title:"Silverware & Flatware Set",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141736956_06.jpg"] },
-  { id:50, title:"Crystal Wine Glasses (Set of 4)",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141736956_10.jpg"] },
-  { id:51, title:"Gold-Rimmed Decorative Dishes",
-    desc:"",
-    imgs:["KakaoTalk_20260512_141736956_12.jpg","KakaoTalk_20260512_141736956_13.jpg"] },
-  { id:53, title:"Dual Shower Head with Handheld Sprayer",
-    desc:"",
-    imgs:["KakaoTalk_20260512_152827583_02.jpg"] },
-  { id:54, title:"Wall-Mounted Wood Shelf Unit",
-    desc:"",
-    imgs:["KakaoTalk_20260512_152827583_03.jpg"] },
-  { id:55, title:"물 티슈 2박스 Disposable Washcloths (Bulk)",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_01.jpg"] },
-  { id:56, title:"Cuchen Rice Cooker (WM-0610US)",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_02.jpg"] },
-  { id:57, title:"Ninja Professional Blender (1000W)",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_03.jpg"] },
-  { id:60, title:"Decorative Shell Bonsai Tree (Large)",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_06.jpg","KakaoTalk_20260512_153350171_07.jpg"] },
-  { id:61, title:"Long Swing-Arm Wall Lamp",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_08.jpg"] },
-  { id:62, title:"Medify Air Tower Air Purifier",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_09.jpg"] },
-  { id:63, title:"Primo Water Dispenser / Cooler",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_10.jpg"] },
-  { id:64, title:"Keurig Single-Serve Coffee Maker",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_11.jpg","KakaoTalk_20260512_153350171_12.jpg"] },
-  { id:65, title:"부엌 알루미늄 쓰레기통 Stainless Steel Step Trash Can",
-    desc:"",
-    imgs:["KakaoTalk_20260512_153350171_13.jpg"] },
-  { id:67, title:"Leaf Rake",
-    desc:"",
-    imgs:["leaf_rake2.jpg"] },
-  { id:68, title:"Trunk-Mount Bicycle Rack",
-    desc:"",
-    imgs:["bicycle_car_rack.jpg"] },
-  { id:69, title:"KF94 더 마스크 (Korean Masks)",
-    desc:"",
-    imgs:["20260513_100540.jpg"] },
-  { id:70, title:"공구 Tool Assortment",
-    desc:"",
-    imgs:["20260513_102610.jpg"] },
-  { id:71, title:"막힌 변기/하수구 뚫기 Cobra 25 ft Drain Auger",
-    desc:"",
-    imgs:["20260513_102648.jpg","20260513_102654.jpg"] },
-  { id:72, title:"New Item #72",
-    desc:"",
-    imgs:[] }
+  {
+    "id": 1,
+    "title": "강아지 펜스 Pet Exercise Pen / Playpen",
+    "desc": "",
+    "imgs": [
+      "20260412_172028.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "차 엔진오일 교환 도구/통 Oil Change Kit — Funnels, Tools, Drain Pan & Collection Jug",
+    "desc": "",
+    "imgs": [
+      "20260412_172218.jpg",
+      "20260412_172239.jpg",
+      "20260426_165637.jpg"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Corded Handheld Vacuum",
+    "desc": "",
+    "imgs": [
+      "20260412_173054.jpg"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Firewood Bundles",
+    "desc": "",
+    "imgs": [
+      "20260426_162732.jpg"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Ballport Tennis Ball Hopper + Balls",
+    "desc": "",
+    "imgs": [
+      "20260426_162900.jpg",
+      "20260426_162924.jpg"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "2-Shelf Shoe Rack",
+    "desc": "",
+    "imgs": [
+      "20260426_163402.jpg"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "HP LaserJet 30A Toner Cartridge",
+    "desc": "",
+    "imgs": [
+      "20260426_163847.jpg"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Penn Tennis Balls — Case (12 Cans / 36 Balls)",
+    "desc": "",
+    "imgs": [
+      "20260426_164118.jpg"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Tecnifibre NRG2 Tennis String",
+    "desc": "",
+    "imgs": [
+      "20260426_164206.jpg"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Heavy-Duty Metal Shelving Unit",
+    "desc": "",
+    "imgs": [
+      "20260426_164703.jpg"
+    ]
+  },
+  {
+    "id": 21,
+    "title": "선풍기 Tower Fan (2개)",
+    "desc": "",
+    "imgs": [
+      "20260426_170347.jpg"
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Bicycle Hand Pump",
+    "desc": "",
+    "imgs": [
+      "20260426_170518.jpg"
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Paper Trimmer + Stapler",
+    "desc": "",
+    "imgs": [
+      "20260426_171132.jpg"
+    ]
+  },
+  {
+    "id": 24,
+    "title": "책상 데스크 Light Fixture",
+    "desc": "",
+    "imgs": [
+      "20260426_172037.jpg",
+      "light_fixture.jpg"
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Camera Tripod",
+    "desc": "",
+    "imgs": [
+      "20260426_173101.jpg"
+    ]
+  },
+  {
+    "id": 27,
+    "title": "손님 방 액자 Framed Wall Art — White Flowers",
+    "desc": "",
+    "imgs": [
+      "20260426_174047.jpg"
+    ]
+  },
+  {
+    "id": 28,
+    "title": "손님 방 액자 Canvas Wall Art — Watercolor Wildflowers",
+    "desc": "",
+    "imgs": [
+      "20260426_174128.jpg"
+    ]
+  },
+  {
+    "id": 29,
+    "title": "Cork Bulletin Board (Large)",
+    "desc": "",
+    "imgs": [
+      "20260426_174220.jpg"
+    ]
+  },
+  {
+    "id": 30,
+    "title": "Mobil 1 0W-20 Full Synthetic Motor Oil (2 × 5 qt)",
+    "desc": "",
+    "imgs": [
+      "20260426_174644.jpg"
+    ]
+  },
+  {
+    "id": 31,
+    "title": "Assorted Hardware & Fasteners",
+    "desc": "",
+    "imgs": [
+      "20260426_175244.jpg"
+    ]
+  },
+  {
+    "id": 33,
+    "title": "손 세정제 Hand Sanitizer (3 × 32 oz)",
+    "desc": "",
+    "imgs": [
+      "20260426_175436.jpg"
+    ]
+  },
+  {
+    "id": 34,
+    "title": "Cuisinart Pizza Peel — Stainless Steel",
+    "desc": "",
+    "imgs": [
+      "20260426_175751.jpg"
+    ]
+  },
+  {
+    "id": 35,
+    "title": "뒷뜰 그늘 막이 Green Mesh Tarp / Shade Cloth",
+    "desc": "",
+    "imgs": [
+      "20260426_180013.jpg"
+    ]
+  },
+  {
+    "id": 37,
+    "title": "Trunk-Mount Bike Rack (3 Bikes)",
+    "desc": "",
+    "imgs": [
+      "20260426_180802.jpg"
+    ]
+  },
+  {
+    "id": 38,
+    "title": "Floating Wood Shelves + Brackets (Pair)",
+    "desc": "",
+    "imgs": [
+      "20260426_180953.jpg"
+    ]
+  },
+  {
+    "id": 39,
+    "title": "Large Whiteboard / Dry-Erase Board",
+    "desc": "",
+    "imgs": [
+      "20260426_181212.jpg"
+    ]
+  },
+  {
+    "id": 40,
+    "title": "Extension Cords — Large Assortment",
+    "desc": "",
+    "imgs": [
+      "20260426_181609.jpg"
+    ]
+  },
+  {
+    "id": 41,
+    "title": "Car Roof Rack Crossbars (Pair)",
+    "desc": "",
+    "imgs": [
+      "20260426_181759.jpg"
+    ]
+  },
+  {
+    "id": 42,
+    "title": "턱걸이 바",
+    "desc": "",
+    "imgs": [
+      "20260426_181903.jpg"
+    ]
+  },
+  {
+    "id": 43,
+    "title": "Dell Network Switch (with Cables & Adapter)",
+    "desc": "",
+    "imgs": [
+      "20260426_182511.jpg"
+    ]
+  },
+  {
+    "id": 44,
+    "title": "Black+Decker Upright Vacuum with Attachments",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141657692_09.jpg",
+      "KakaoTalk_20260512_141657692_10.jpg"
+    ]
+  },
+  {
+    "id": 45,
+    "title": "Wire Storage Baskets — Set of 4",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141657692_06.jpg"
+    ]
+  },
+  {
+    "id": 47,
+    "title": "Dishes & Bowls Collection",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141736956.jpg"
+    ]
+  },
+  {
+    "id": 49,
+    "title": "Silverware & Flatware Set",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141736956_06.jpg"
+    ]
+  },
+  {
+    "id": 50,
+    "title": "Crystal Wine Glasses (Set of 4)",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141736956_10.jpg"
+    ]
+  },
+  {
+    "id": 51,
+    "title": "Gold-Rimmed Decorative Dishes",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_141736956_12.jpg",
+      "KakaoTalk_20260512_141736956_13.jpg"
+    ]
+  },
+  {
+    "id": 53,
+    "title": "Dual Shower Head with Handheld Sprayer",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_152827583_02.jpg"
+    ]
+  },
+  {
+    "id": 54,
+    "title": "Wall-Mounted Wood Shelf Unit",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_152827583_03.jpg"
+    ]
+  },
+  {
+    "id": 55,
+    "title": "물 티슈 2박스 Disposable Washcloths (Bulk)",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_01.jpg"
+    ]
+  },
+  {
+    "id": 56,
+    "title": "Cuchen Rice Cooker (WM-0610US)",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_02.jpg"
+    ]
+  },
+  {
+    "id": 57,
+    "title": "Ninja Professional Blender (1000W)",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_03.jpg"
+    ]
+  },
+  {
+    "id": 60,
+    "title": "Decorative Shell Bonsai Tree (Large)",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_06.jpg",
+      "KakaoTalk_20260512_153350171_07.jpg"
+    ]
+  },
+  {
+    "id": 61,
+    "title": "Long Swing-Arm Wall Lamp",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_08.jpg"
+    ]
+  },
+  {
+    "id": 62,
+    "title": "Medify Air Tower Air Purifier",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_09.jpg"
+    ]
+  },
+  {
+    "id": 63,
+    "title": "Primo Water Dispenser / Cooler",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_10.jpg"
+    ]
+  },
+  {
+    "id": 64,
+    "title": "Keurig Single-Serve Coffee Maker",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_11.jpg",
+      "KakaoTalk_20260512_153350171_12.jpg"
+    ]
+  },
+  {
+    "id": 65,
+    "title": "부엌 알루미늄 쓰레기통 Stainless Steel Step Trash Can",
+    "desc": "",
+    "imgs": [
+      "KakaoTalk_20260512_153350171_13.jpg"
+    ]
+  },
+  {
+    "id": 67,
+    "title": "Leaf Rake",
+    "desc": "",
+    "imgs": [
+      "leaf_rake2.jpg"
+    ]
+  },
+  {
+    "id": 68,
+    "title": "Trunk-Mount Bicycle Rack",
+    "desc": "",
+    "imgs": [
+      "bicycle_car_rack.jpg"
+    ]
+  },
+  {
+    "id": 69,
+    "title": "KF94 더 마스크 (Korean Masks)",
+    "desc": "",
+    "imgs": [
+      "20260513_100540.jpg"
+    ]
+  },
+  {
+    "id": 70,
+    "title": "공구 Tool Assortment",
+    "desc": "",
+    "imgs": [
+      "20260513_102610.jpg"
+    ]
+  },
+  {
+    "id": 71,
+    "title": "막힌 변기/하수구 뚫기 Cobra 25 ft Drain Auger",
+    "desc": "",
+    "imgs": [
+      "20260513_102648.jpg",
+      "20260513_102654.jpg"
+    ]
+  },
+  {
+    "id": 72,
+    "title": "New Item #72",
+    "desc": "",
+    "imgs": []
+  }
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Item state  (localStorage)
 // ─────────────────────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'garage-v18';
+const STORAGE_KEY = 'garage-v19';
 const ANNOUNCE_KEY = 'garage-announce-v1';
 const DEFAULT_ANNOUNCEMENT = '친애하고 존경하고 아끼는 교수님들, 아시다시피 저의 한국행으로 집 정리를 하게되었습니다. 생활물품들을 버리는 대신 환경을 보존하고 또 교수님들이 혹시 필요할 물건들이 있다면 화면 아래 메모 남겨주시고 오셔서 가져가시면 되겠습니다.';
 let items = [], gone = {}, imgIdx = {}, announcement = '';
